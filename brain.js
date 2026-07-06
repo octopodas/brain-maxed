@@ -284,9 +284,10 @@ function dept(e) {
   if (e.layer === 'app') return e.path.startsWith('plugin:') ? 'plugins' : e.path.startsWith('mcp:') ? 'mcp servers' : 'connectors';
   if (e.layer === 'routine') return 'routines';
   const n = e.name;
+  if (/fusion|agy|nano-banana|claude-api/.test(n)) return 'ai models'; // before media: nano-banana must not match `banana`
   if (/hyperframe|video|motion|caption|slideshow|remotion|talking|faceless|explainer|launch|music|recut|media|banana|stitch/.test(n)) return 'media & video';
   if (/monetization|undergradly|widget|esy|compliance|analytics|writing|articles|sponsored|graphify/.test(n)) return 'sites & content';
-  if (/brainstorm|debug|test-driven|plan|review|worktree|branch|subagent|superpower|verification|skill|dispatch|executing|finishing|ponytail|fusion|agy|humanizer/.test(n)) return 'dev process';
+  if (/brainstorm|debug|test-driven|plan|review|worktree|branch|subagent|superpower|verification|skill|dispatch|executing|finishing|ponytail|humanizer/.test(n)) return 'dev process';
   return 'other skills';
 }
 
@@ -501,7 +502,8 @@ function mapHtml(data) {
       +(n.path.startsWith('/')?'<a href="'+(SERVED?'/file?p='+encodeURIComponent(n.path):'file://'+n.path)+'" target="_blank" rel="noopener">open file</a>':'')
       +(n.preview?'<pre></pre>':'');
     if(n.preview)s.querySelector('pre').textContent=n.preview+(n.size>1200?'\\n…':'')}
-  function center(n){cam.x=-n.x*cam.z;cam.y=-n.y*cam.z}
+  // nodes in unchecked projects are never laid out (x,y undefined) — centering on one would NaN the camera and freeze the map
+  function center(n){if(!isFinite(n.x)||!isFinite(n.y))return;cam.x=-n.x*cam.z;cam.y=-n.y*cam.z}
   let drag=null,dragN=null;
   cv.onmousedown=e=>{dragN=pick(e.clientX,e.clientY)||null;drag={x:e.clientX,y:e.clientY,moved:false}};
   onmousemove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
