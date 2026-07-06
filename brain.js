@@ -205,19 +205,21 @@ function retrieve(question, opts = {}) {
   const toks = tokens(question);
   const entries = loadIndex();
   const ranked = entries.map(e => ({ e, s: scoreEntry(e, toks) })).sort((a, b) => b.s - a.s);
-  const top = ranked[0];
+  const candidates = ranked.slice(0, 3).filter(r => r.s > 0)
+    .map(r => ({ name: r.e.name, layer: r.e.layer, path: r.e.path, desc: r.e.desc, score: r.s }));
+  const top = (opts.pick && ranked.find(r => r.e.path === opts.pick)) || ranked[0];
   const out = [];
-  if (!top || top.s === 0) {
+  if (!top || (top.s === 0 && !opts.pick)) {
     out.push('no index match for: ' + toks.join(' ') + '  (try `node brain.js index` to rescan)');
-    return { text: out.join('\n'), hit: null };
+    return { text: out.join('\n'), hit: null, candidates, answer: null };
   }
   out.push('candidates: ' + ranked.slice(0, 3).map(r => `${r.e.name}(${r.s})`).join('  '));
   const e = top.e;
   if (!fs.existsSync(e.path)) { // apps/routines have no file — the index line IS the answer
     out.push(`📍 ${e.layer} | ${e.name}`, e.desc);
-    return { text: out.join('\n'), hit: e };
+    return { text: out.join('\n'), hit: e, candidates, answer: { path: e.path, head: '(index)', body: e.desc, pointer: null } };
   }
-  let sec = bestSection(e.path, toks);
+  let sec = bestSection(e.path, toks), pointer = null;
   out.push(`📍 ${e.path} § ${sec.head}`);
   // follow one pointer if the section is basically just a pointer
   const ptr = sec.body.match(/\[\[([\w-]+)\]\]/) || sec.body.match(/\(([^()\s]+\.md)\)/);
@@ -225,11 +227,11 @@ function retrieve(question, opts = {}) {
     let target = null;
     if (ptr[1].endsWith('.md')) { const p = path.resolve(path.dirname(e.path), ptr[1]); if (fs.existsSync(p)) target = p; }
     else { const t = entries.find(x => x.name === ptr[1]); if (t && fs.existsSync(t.path)) target = t.path; }
-    if (target) { sec = bestSection(target, toks); out.push(`↪ pointer → ${target} § ${sec.head}`); }
+    if (target) { sec = bestSection(target, toks); out.push(`↪ pointer → ${target} § ${sec.head}`); pointer = target; }
   }
   out.push('---', sec.body.trim().slice(0, 3500));
   if (opts.stats) out.push('---', `evidence: ${Math.min(sec.body.trim().length, 3500)} chars (whole file: ${read(e.path).length} chars)`);
-  return { text: out.join('\n'), hit: e };
+  return { text: out.join('\n'), hit: e, candidates, answer: { path: pointer || e.path, head: sec.head, body: sec.body.trim().slice(0, 3500), pointer } };
 }
 
 // ---------- remember ----------
@@ -532,6 +534,15 @@ function test() {
   assert(t1.hit && t1.hit.name === 'brain-selftest-alpha', 'retrieval failed, got: ' + (t1.hit && t1.hit.name));
   const t2 = retrieve('zorptangle');
   assert(t2.hit && t2.hit.name === 'brain-selftest-beta', 'scoring failed, got: ' + (t2.hit && t2.hit.name));
+  // structured output for the /query panel
+  const t3 = retrieve('zorptangle');
+  assert(Array.isArray(t3.candidates) && t3.candidates[0] && t3.candidates[0].name === 'brain-selftest-beta', 'candidates failed: ' + JSON.stringify(t3.candidates));
+  assert(typeof t3.candidates[0].score === 'number' && t3.candidates[0].score > 0, 'candidate score missing');
+  assert(t3.answer && t3.answer.body.includes('zorptangle'), 'answer body failed');
+  const t4 = retrieve('zorptangle', { pick: t1.hit.path });
+  assert(t4.answer && t4.answer.path === t1.hit.path, 'pick failed, got: ' + (t4.answer && t4.answer.path));
+  const t5 = retrieve('qqqqzzzzgibberish');
+  assert(t5.answer === null && t5.candidates.length === 0, 'no-match shape failed: ' + JSON.stringify(t5.candidates));
   // cost proof: evidence handed to the model vs reading whole files the default way
   const full = read(t1.hit.path).length + read(t2.hit.path).length;
   const evid = t1.text.length + t2.text.length;
