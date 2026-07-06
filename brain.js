@@ -566,6 +566,16 @@ function serve(port) {
       if (allowed && fs.existsSync(p)) send(200, read(p), (p.endsWith('.html') ? 'text/html' : 'text/plain') + '; charset=utf-8');
       else send(404, 'not found', 'text/plain');
     }
+    else if (req.method === 'GET' && u.pathname === '/query') {
+      const q = (u.searchParams.get('q') || '').trim();
+      if (!q) send(400, JSON.stringify({ error: 'missing q' }));
+      else {
+        const pick = u.searchParams.get('pick') || '';
+        // same guard as /file: pick must be a path the brain already indexes
+        const r = retrieve(q, loadIndex().some(e => e.path === pick) ? { pick } : {});
+        send(200, JSON.stringify({ candidates: r.candidates, answer: r.answer, hit: r.hit ? r.hit.path : null }));
+      }
+    }
     else if (req.method === 'GET' && u.pathname === '/browse') {
       const dir = path.resolve(u.searchParams.get('dir') || HOME);
       try {
