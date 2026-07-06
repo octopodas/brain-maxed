@@ -303,36 +303,37 @@ function mapHtml(data) {
   return `<!doctype html><html><head><meta charset="utf-8"><title>brain-maxed</title><style>
   html,body{margin:0;height:100%;background:#07080c;color:#dde3ea;font:14px/1.45 system-ui,sans-serif;overflow:hidden}
   #c{display:block;cursor:grab}
-  #side{position:fixed;left:0;top:0;bottom:0;width:300px;background:#12151cee;border-right:1px solid #2c333c;padding:16px;display:none;overflow:auto}
-  #side h2{margin:0 0 4px;font-size:16px} #side .layer{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
-  #side .path{font-size:11px;word-break:break-all;opacity:.6;margin:8px 0} #side a{color:#6cb2ff}
+  #side{position:fixed;left:0;top:0;bottom:0;width:300px;background:#12151cee;border-right:1px solid #2c333c;padding:16px;display:none;overflow:auto;font-size:calc(14px*var(--fs,1))}
+  #side h2{margin:0 0 4px;font-size:calc(16px*var(--fs,1))} #side .layer{font-size:calc(11px*var(--fs,1));text-transform:uppercase;letter-spacing:.08em;opacity:.7}
+  #side .path{font-size:calc(11px*var(--fs,1));word-break:break-all;opacity:.6;margin:8px 0} #side a{color:#6cb2ff}
   #panel{position:fixed;right:16px;top:16px;width:280px;box-sizing:border-box;background:#12151cdd;border:1px solid #2c333c;border-radius:10px;padding:14px}
   #pgrip{position:absolute;left:-4px;top:0;bottom:0;width:8px;cursor:ew-resize}
-  #q{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none}
-  #panel label{display:flex;gap:6px;align-items:center;font-size:12px;margin-top:10px;opacity:.85}
-  #panel .cap{font-size:10px;letter-spacing:.12em;opacity:.55;margin:12px 0 5px;text-transform:uppercase}
-  #panel .seg{display:flex;gap:6px} #panel .seg button{flex:1;background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;padding:5px 0;border-radius:7px;font-size:12px;cursor:pointer}
+  #q{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none;font-size:calc(13px*var(--fs,1))}
+  .fsb{background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;border-radius:7px;width:26px;flex:none;cursor:pointer;font-size:calc(13px*var(--fs,1))}
+  #panel label{display:flex;gap:6px;align-items:center;font-size:calc(12px*var(--fs,1));margin-top:10px;opacity:.85}
+  #panel .cap{font-size:calc(10px*var(--fs,1));letter-spacing:.12em;opacity:.55;margin:12px 0 5px;text-transform:uppercase}
+  #panel .seg{display:flex;gap:6px} #panel .seg button{flex:1;background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;padding:5px 0;border-radius:7px;font-size:calc(12px*var(--fs,1));cursor:pointer}
   #panel .seg button.on{background:#e8eaed;color:#111;font-weight:600}
   #ask{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none}
-  #ares{display:none;margin-top:8px;font-size:12px}
+  #ares{display:none;margin-top:8px;font-size:calc(12px*var(--fs,1))}
   #ares .chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;max-height:26vh;overflow-y:auto}
-  #ares .chip{background:#0b0d12;border:1px solid #2c333c;border-radius:12px;padding:2px 8px;cursor:pointer;font-size:11px}
+  #ares .chip{background:#0b0d12;border:1px solid #2c333c;border-radius:12px;padding:2px 8px;cursor:pointer;font-size:calc(11px*var(--fs,1))}
   #ares .chip.on{background:#e8eaed;color:#111;font-weight:600}
-  #ares .ahead{font-size:10px;word-break:break-all;opacity:.6;margin-bottom:4px}
-  #ares .abody{background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:8px;white-space:pre-wrap;word-break:break-word;max-height:38vh;overflow:auto;font-size:11px}
-  #side pre{font-size:11px;background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:10px;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow:auto}
-  #plist label{display:flex;gap:6px;align-items:center;font-size:12px;margin:4px 0;opacity:.9}
-  #plist .x{margin-left:auto;cursor:pointer;opacity:.5;font-size:11px} #plist .x:hover{opacity:1;color:#e06a6a}
-  button.wide{width:100%;margin-top:8px;background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;padding:6px 0;border-radius:7px;cursor:pointer;font-size:12px}
+  #ares .ahead{font-size:calc(10px*var(--fs,1));word-break:break-all;opacity:.6;margin-bottom:4px}
+  #ares .abody{background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:8px;white-space:pre-wrap;word-break:break-word;max-height:38vh;overflow:auto;font-size:calc(11px*var(--fs,1))}
+  #side pre{font-size:calc(11px*var(--fs,1));background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:10px;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow:auto}
+  #plist label{display:flex;gap:6px;align-items:center;font-size:calc(12px*var(--fs,1));margin:4px 0;opacity:.9}
+  #plist .x{margin-left:auto;cursor:pointer;opacity:.5;font-size:calc(11px*var(--fs,1))} #plist .x:hover{opacity:1;color:#e06a6a}
+  button.wide{width:100%;margin-top:8px;background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;padding:6px 0;border-radius:7px;cursor:pointer;font-size:calc(12px*var(--fs,1))}
   #fb{display:none;margin-top:8px;border:1px solid #2c333c;border-radius:7px;padding:8px;background:#0b0d12}
-  #fbpath{font-size:10px;word-break:break-all;opacity:.6;margin-bottom:6px}
-  #fbdirs{max-height:180px;overflow:auto;font-size:12px}
+  #fbpath{font-size:calc(10px*var(--fs,1));word-break:break-all;opacity:.6;margin-bottom:6px}
+  #fbdirs{max-height:180px;overflow:auto;font-size:calc(12px*var(--fs,1))}
   #fbdirs div{padding:3px 6px;border-radius:5px;cursor:pointer} #fbdirs div:hover{background:#1c2230}
-  #fbhint{display:none;font-size:11px;opacity:.65;margin-top:8px;line-height:1.5}
+  #fbhint{display:none;font-size:calc(11px*var(--fs,1));opacity:.65;margin-top:8px;line-height:1.5}
   #legend{position:fixed;left:12px;bottom:12px;font-size:12px;opacity:.85} #legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 12px}
   </style></head><body>
   <canvas id="c"></canvas>
-  <div id="panel"><div id="pgrip"></div><input id="q" placeholder="search… ( / , Enter opens)">
+  <div id="panel"><div id="pgrip"></div><div style="display:flex;gap:6px"><input id="q" placeholder="search… ( / , Enter opens)"><button id="fminus" class="fsb" title="smaller text">−</button><button id="fplus" class="fsb" title="larger text">+</button></div>
     <div class="cap">ask the brain</div><input id="ask" placeholder="ask… (Enter)">
     <div id="ares"><div class="chips"></div><div class="ahead"></div><div class="abody"></div></div>
     <div class="cap">layout</div><div class="seg" id="lay"><button data-v="rings" class="on">Rings</button><button data-v="force">Force</button></div>
@@ -487,6 +488,12 @@ function mapHtml(data) {
   document.getElementById('pgrip').onmousedown=e=>{e.preventDefault();pgrab={x:e.clientX,w:panel.offsetWidth}};
   addEventListener('mousemove',e=>{if(!pgrab)return;panel.style.width=Math.max(220,Math.min(innerWidth-80,pgrab.w+pgrab.x-e.clientX))+'px'});
   addEventListener('mouseup',()=>pgrab=null);
+  // --- font size: +/- scales panel + side-pane text via the --fs multiplier; persisted across reloads ---
+  let fsz=+localStorage.brainFS||1;
+  function setFS(v){fsz=Math.max(.7,Math.min(1.8,Math.round(v*10)/10));document.documentElement.style.setProperty('--fs',fsz);localStorage.brainFS=fsz}
+  setFS(fsz);
+  document.getElementById('fminus').onclick=()=>setFS(fsz-.1);
+  document.getElementById('fplus').onclick=()=>setFS(fsz+.1);
   cv.onwheel=e=>{e.preventDefault();cam.z=Math.max(.15,Math.min(5,cam.z*(e.deltaY<0?1.1:.9)))};
   const q=document.getElementById('q');q.oninput=e=>filter=e.target.value.toLowerCase();
   q.onkeydown=e=>{if(e.key==='Enter'&&filter){const n=N.find(n=>vis(n)&&(n.name+n.desc).toLowerCase().includes(filter));if(n){openSide(n);center(n)}}};
