@@ -73,7 +73,7 @@ Walks the project for `.md` artifacts (skips `node_modules`, hidden dirs, build 
 ### Serve mode (attach from the UI)
 
 ```bash
-node brain.js serve        # http://localhost:4321
+node brain.js serve        # http://localhost:7373  (or: node brain.js serve 9090)
 ```
 
 Serves the map with live controls: **+ attach project…** opens a folder browser — navigate to any folder and attach it without touching the CLI; **✕** next to a project detaches it. Under **projects** every attached project (and core) has a checkbox: all checked = union view, uncheck to exclude one from the presentation. Checkbox state persists in the browser; the attachment list itself lives in `projects.json`.
@@ -102,3 +102,7 @@ Verifies known questions hit the right files, the remember-roundtrip works, and 
 ## Claude Code integration
 
 You normally don't run anything yourself: routing notes in this repo's `CLAUDE.md` and your global `~/.claude/CLAUDE.md` tell every session to call `brain.js` before grep/glob-hunting for workspace facts, and to store new durable facts with `remember`.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

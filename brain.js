@@ -328,7 +328,7 @@ function mapHtml(data) {
     <div class="cap">projects</div><div id="plist"></div>
     <button id="attBtn" class="wide">+ attach project…</button>
     <div id="fb"><div id="fbpath"></div><div id="fbdirs"></div><div class="seg" style="margin-top:8px"><button id="fbok">attach this folder</button><button id="fbx">close</button></div></div>
-    <div id="fbhint">attaching needs serve mode:<br>run <b>node brain.js serve</b> then open <b>http://localhost:4321</b></div>
+    <div id="fbhint">attaching needs serve mode:<br>run <b>node brain.js serve</b> then open <b>http://localhost:7373</b></div>
     <label><input type="checkbox" id="names"> file names</label></div>
   <div id="legend">rings:<span style="background:#5aa9e6"></span>applications<span style="background:#e6c229"></span>routines<span style="background:#b08ae0"></span>memory<span style="background:#ff8a3d"></span>skills</div>
   <div id="side"></div>
@@ -581,7 +581,7 @@ else if (cmd === 'attach' || cmd === 'detach') {
   const list = setProject(rest[0] || '', cmd === 'attach');
   console.log('projects:', list.length ? list.join('  ') : '(none)');
   console.log('indexed', writeIndex().length, 'entries; mapped', buildMap(), 'nodes');
-} else if (cmd === 'serve') serve(+rest[0] || 4321);
+} else if (cmd === 'serve') serve(+rest[0] || 7373);
 else if (cmd === 'remember') {
   const ni = rest.indexOf('--name');
   const slug = ni >= 0 ? rest.splice(ni, 2)[1] : undefined;
