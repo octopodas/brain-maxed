@@ -78,7 +78,7 @@ node brain.js serve        # http://localhost:7373  (or: node brain.js serve 909
 
 Serves the map with live controls: **+ attach project…** opens a folder browser — navigate to any folder and attach it without touching the CLI; **✕** next to a project detaches it. Under **projects** every attached project (and core) has a checkbox: all checked = union view, uncheck to exclude one from the presentation. Checkbox state persists in the browser; the attachment list itself lives in `projects.json`.
 
-Opened as a plain file (`brain-map.html`), the checkboxes still work — only attach/detach need serve mode.
+Opened as a plain file (`brain-map.html`), the checkboxes still work — only attach/detach and the ask-the-brain panel need serve mode.
 
 ### Self-test
 

@@ -209,7 +209,7 @@ function retrieve(question, opts = {}) {
     .map(r => ({ name: r.e.name, layer: r.e.layer, path: r.e.path, desc: r.e.desc, score: r.s }));
   const top = (opts.pick && ranked.find(r => r.e.path === opts.pick)) || ranked[0];
   const out = [];
-  if (!top || (top.s === 0 && !opts.pick)) {
+  if (!top || (top.s === 0 && !opts.pick)) { // a pick forces its file even at score 0
     out.push('no index match for: ' + toks.join(' ') + '  (try `node brain.js index` to rescan)');
     return { text: out.join('\n'), hit: null, candidates, answer: null };
   }
