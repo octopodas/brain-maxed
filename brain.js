@@ -205,7 +205,7 @@ function retrieve(question, opts = {}) {
   const toks = tokens(question);
   const entries = loadIndex();
   const ranked = entries.map(e => ({ e, s: scoreEntry(e, toks) })).sort((a, b) => b.s - a.s);
-  const candidates = ranked.slice(0, 3).filter(r => r.s > 0)
+  const candidates = ranked.filter(r => r.s > 0)
     .map(r => ({ name: r.e.name, layer: r.e.layer, path: r.e.path, desc: r.e.desc, score: r.s }));
   const top = (opts.pick && ranked.find(r => r.e.path === opts.pick)) || ranked[0];
   const out = [];
@@ -315,7 +315,7 @@ function mapHtml(data) {
   #panel .seg button.on{background:#e8eaed;color:#111;font-weight:600}
   #ask{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none}
   #ares{display:none;margin-top:8px;font-size:12px}
-  #ares .chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+  #ares .chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;max-height:26vh;overflow-y:auto}
   #ares .chip{background:#0b0d12;border:1px solid #2c333c;border-radius:12px;padding:2px 8px;cursor:pointer;font-size:11px}
   #ares .chip.on{background:#e8eaed;color:#111;font-weight:600}
   #ares .ahead{font-size:10px;word-break:break-all;opacity:.6;margin-bottom:4px}
