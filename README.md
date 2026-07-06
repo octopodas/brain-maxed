@@ -1,4 +1,4 @@
-# brain-maximus
+# brain-maxed
 
 A deterministic second brain for your agentic workspace. Plain code answers "where is that fact?" — the model only sees the final evidence. One file (`brain.js`), no dependencies, no server.
 

@@ -298,7 +298,7 @@ function buildMap() {
 
 // concentric-rings layout: core -> SKILLS rings -> MEMORY disc w/ dept hubs -> ROUTINES ring -> APPLICATIONS ring
 function mapHtml(data) {
-  return `<!doctype html><html><head><meta charset="utf-8"><title>brain-maximus</title><style>
+  return `<!doctype html><html><head><meta charset="utf-8"><title>brain-maxed</title><style>
   html,body{margin:0;height:100%;background:#07080c;color:#dde3ea;font:14px/1.45 system-ui,sans-serif;overflow:hidden}
   #c{display:block;cursor:grab}
   #side{position:fixed;left:0;top:0;bottom:0;width:300px;background:#12151cee;border-right:1px solid #2c333c;padding:16px;display:none;overflow:auto}

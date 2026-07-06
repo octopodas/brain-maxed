@@ -1,4 +1,4 @@
-# brain-maximus — second brain
+# brain-maxed — second brain
 
 Deterministic memory engine. Check the index first, open files second, invoke the model last.
 
