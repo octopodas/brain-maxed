@@ -1,0 +1,14 @@
+# generated — recreated by `node brain.js index` and `node brain.js map`
+INDEX.md
+brain-map.html
+
+# your data / local config — never publish
+projects.json
+extras.md
+memory/*
+!memory/.gitkeep
+
+# third-party guides referenced while building — not ours to redistribute
+*.pdf
+
+node_modules/
