@@ -306,7 +306,8 @@ function mapHtml(data) {
   #side{position:fixed;left:0;top:0;bottom:0;width:300px;background:#12151cee;border-right:1px solid #2c333c;padding:16px;display:none;overflow:auto}
   #side h2{margin:0 0 4px;font-size:16px} #side .layer{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
   #side .path{font-size:11px;word-break:break-all;opacity:.6;margin:8px 0} #side a{color:#6cb2ff}
-  #panel{position:fixed;right:16px;top:16px;width:250px;background:#12151cdd;border:1px solid #2c333c;border-radius:10px;padding:14px}
+  #panel{position:fixed;right:16px;top:16px;width:280px;box-sizing:border-box;background:#12151cdd;border:1px solid #2c333c;border-radius:10px;padding:14px}
+  #pgrip{position:absolute;left:-4px;top:0;bottom:0;width:8px;cursor:ew-resize}
   #q{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none}
   #panel label{display:flex;gap:6px;align-items:center;font-size:12px;margin-top:10px;opacity:.85}
   #panel .cap{font-size:10px;letter-spacing:.12em;opacity:.55;margin:12px 0 5px;text-transform:uppercase}
@@ -331,7 +332,7 @@ function mapHtml(data) {
   #legend{position:fixed;left:12px;bottom:12px;font-size:12px;opacity:.85} #legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 12px}
   </style></head><body>
   <canvas id="c"></canvas>
-  <div id="panel"><input id="q" placeholder="search… ( / , Enter opens)">
+  <div id="panel"><div id="pgrip"></div><input id="q" placeholder="search… ( / , Enter opens)">
     <div class="cap">ask the brain</div><input id="ask" placeholder="ask… (Enter)">
     <div id="ares"><div class="chips"></div><div class="ahead"></div><div class="abody"></div></div>
     <div class="cap">layout</div><div class="seg" id="lay"><button data-v="rings" class="on">Rings</button><button data-v="force">Force</button></div>
@@ -480,6 +481,11 @@ function mapHtml(data) {
     if(dragN){dragN.x+=dx/cam.z;dragN.y+=dy/cam.z;if(layoutMode==='force')alpha=Math.max(alpha,.3)}else{cam.x+=dx;cam.y+=dy}
     if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;drag.x=e.clientX;drag.y=e.clientY};
   onmouseup=e=>{if(drag&&!drag.moved)openSide(pick(e.clientX,e.clientY));drag=null;dragN=null};
+  // --- panel resize: drag the left border grip; addEventListener so the canvas handlers above stay intact ---
+  const panel=document.getElementById('panel');let pgrab=null;
+  document.getElementById('pgrip').onmousedown=e=>{e.preventDefault();pgrab={x:e.clientX,w:panel.offsetWidth}};
+  addEventListener('mousemove',e=>{if(!pgrab)return;panel.style.width=Math.max(220,Math.min(innerWidth-80,pgrab.w+pgrab.x-e.clientX))+'px'});
+  addEventListener('mouseup',()=>pgrab=null);
   cv.onwheel=e=>{e.preventDefault();cam.z=Math.max(.15,Math.min(5,cam.z*(e.deltaY<0?1.1:.9)))};
   const q=document.getElementById('q');q.oninput=e=>filter=e.target.value.toLowerCase();
   q.onkeydown=e=>{if(e.key==='Enter'&&filter){const n=N.find(n=>vis(n)&&(n.name+n.desc).toLowerCase().includes(filter));if(n){openSide(n);center(n)}}};
