@@ -312,6 +312,13 @@ function mapHtml(data) {
   #panel .cap{font-size:10px;letter-spacing:.12em;opacity:.55;margin:12px 0 5px;text-transform:uppercase}
   #panel .seg{display:flex;gap:6px} #panel .seg button{flex:1;background:#0b0d12;border:1px solid #2c333c;color:#aab3bd;padding:5px 0;border-radius:7px;font-size:12px;cursor:pointer}
   #panel .seg button.on{background:#e8eaed;color:#111;font-weight:600}
+  #ask{background:#0b0d12;border:1px solid #2c333c;color:#dde3ea;padding:7px 10px;border-radius:7px;width:100%;box-sizing:border-box;outline:none}
+  #ares{display:none;margin-top:8px;font-size:12px}
+  #ares .chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+  #ares .chip{background:#0b0d12;border:1px solid #2c333c;border-radius:12px;padding:2px 8px;cursor:pointer;font-size:11px}
+  #ares .chip.on{background:#e8eaed;color:#111;font-weight:600}
+  #ares .ahead{font-size:10px;word-break:break-all;opacity:.6;margin-bottom:4px}
+  #ares .abody{background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:8px;white-space:pre-wrap;word-break:break-word;max-height:38vh;overflow:auto;font-size:11px}
   #side pre{font-size:11px;background:#0b0d12;border:1px solid #2c333c;border-radius:7px;padding:10px;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow:auto}
   #plist label{display:flex;gap:6px;align-items:center;font-size:12px;margin:4px 0;opacity:.9}
   #plist .x{margin-left:auto;cursor:pointer;opacity:.5;font-size:11px} #plist .x:hover{opacity:1;color:#e06a6a}
@@ -325,12 +332,14 @@ function mapHtml(data) {
   </style></head><body>
   <canvas id="c"></canvas>
   <div id="panel"><input id="q" placeholder="search… ( / , Enter opens)">
+    <div class="cap">ask the brain</div><input id="ask" placeholder="ask… (Enter)">
+    <div id="ares"><div class="chips"></div><div class="ahead"></div><div class="abody"></div></div>
     <div class="cap">layout</div><div class="seg" id="lay"><button data-v="rings" class="on">Rings</button><button data-v="force">Force</button></div>
     <div class="cap">view</div><div class="seg" id="view"><button data-v="dept" class="on">Departments</button><button data-v="folder">Folders</button></div>
     <div class="cap">projects</div><div id="plist"></div>
     <button id="attBtn" class="wide">+ attach project…</button>
     <div id="fb"><div id="fbpath"></div><div id="fbdirs"></div><div class="seg" style="margin-top:8px"><button id="fbok">attach this folder</button><button id="fbx">close</button></div></div>
-    <div id="fbhint">attaching needs serve mode:<br>run <b>node brain.js serve</b> then open <b>http://localhost:7373</b></div>
+    <div id="fbhint">this needs serve mode:<br>run <b>node brain.js serve</b> then open <b>http://localhost:7373</b></div>
     <label><input type="checkbox" id="names"> file names</label></div>
   <div id="legend">rings:<span style="background:#5aa9e6"></span>applications<span style="background:#e6c229"></span>routines<span style="background:#b08ae0"></span>memory<span style="background:#ff8a3d"></span>skills</div>
   <div id="side"></div>
@@ -482,6 +491,25 @@ function mapHtml(data) {
   seg('view',v=>{view=v;layout()});
   // --- external projects: checkboxes (union / exclude) + folder-browser attach, persisted server-side in projects.json ---
   const SERVED=location.protocol.indexOf('http')===0;
+  // --- ask the brain: server-side retrieve via /query; chip click re-picks + zooms the node ---
+  const ask=document.getElementById('ask'),ares=document.getElementById('ares');
+  let lastQ='';
+  async function runQuery(q,pickPath){
+    const j=await(await fetch('/query?q='+encodeURIComponent(q)+(pickPath?'&pick='+encodeURIComponent(pickPath):''))).json();
+    ares.style.display='block';
+    const chips=ares.querySelector('.chips'),head=ares.querySelector('.ahead'),body=ares.querySelector('.abody');
+    chips.innerHTML='';
+    const active=pickPath||j.hit||'';
+    (j.candidates||[]).forEach(c=>{const el=document.createElement('span');
+      el.className='chip'+(c.path===active?' on':'');el.textContent=c.name+' · '+c.score;
+      el.onclick=()=>{runQuery(lastQ,c.path);const n=N.find(n=>n.path===c.path);if(n){sel=n;center(n)}};
+      chips.appendChild(el)});
+    if(j.answer){head.textContent='📍 '+j.answer.path+' § '+(j.answer.head||'')+(j.answer.pointer?'  ↪ pointer':'');body.textContent=j.answer.body}
+    else{head.textContent='';body.textContent='no index match for: '+q}
+  }
+  ask.onkeydown=e=>{if(e.key!=='Enter')return;const v=ask.value.trim();if(!v)return;
+    if(!SERVED){document.getElementById('fbhint').style.display='block';return}
+    lastQ=v;runQuery(v)};
   function renderProjects(){const pl=document.getElementById('plist');pl.innerHTML='';
     PROJECTS.forEach(p=>{const l=document.createElement('label'),cb=document.createElement('input');
       cb.type='checkbox';cb.checked=checked[p]!==false;
