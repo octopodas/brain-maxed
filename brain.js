@@ -3,6 +3,7 @@
 // The model is invoked exactly once, at the end, with evidence attached.
 //
 //   node brain.js "which tts voice do we use"   retrieve: score index -> open ONE file -> ONE section
+//   node brain.js "list recent plans in X"       leading "list" enumerates matching entries, newest first
 //   node brain.js index                          rescan workspace -> INDEX.md
 //   node brain.js remember "fact" [--name slug]  store memory file + index line
 //   node brain.js map                            regenerate brain-map.html
@@ -69,11 +70,11 @@ function setProject(dir, on) {
   return next;
 }
 function walkMd(dir, depth = 0, out = []) {
-  if (depth > 3 || out.length >= 200) return out; // ponytail: 200 files/project cap, raise if a real project needs more
+  if (depth > 3 || out.length >= 500) return out; // ponytail: 500 files/project cap, raise if a real project needs more
   let ents = [];
   try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch { return out; }
   for (const e of ents) {
-    if (out.length >= 200) break;
+    if (out.length >= 500) break;
     if (e.isDirectory()) {
       if (!e.name.startsWith('.') && !/^(node_modules|dist|build|out|coverage|vendor|venv)$/.test(e.name)) walkMd(path.join(dir, e.name), depth + 1, out);
     } else if (e.name.endsWith('.md')) out.push(path.join(dir, e.name));
@@ -164,6 +165,29 @@ function loadIndex() {
   return entries;
 }
 
+// ---------- enumerate ----------
+// "list recent plans in ipeds-db" — enumeration, not retrieval: match many entries, sort by date, list them.
+function enumerate(question) {
+  const toks = tokens(question).filter(t => !/^(list|recent|latest|newest|enumerate)$/.test(t));
+  const matched = loadIndex().filter(e => toks.every(t => wordRe(t).test(e.name + ' ' + e.path + ' ' + e.desc)));
+  const dated = matched.map(e => {
+    const m = e.path.match(/(\d{4}-\d{2}-\d{2})/); // date in filename beats mtime
+    let d = m ? m[1] : '';
+    if (!d) { try { d = fs.statSync(e.path).mtime.toISOString().slice(0, 10); } catch { } }
+    return { e, d };
+  }).sort((a, b) => b.d.localeCompare(a.d));
+  const shown = dated.slice(0, 20); // ponytail: fixed cap, add --all if a real list needs more
+  const out = [`list: ${toks.join(' ') || '(everything)'} — ${dated.length} match${dated.length === 1 ? '' : 'es'}`];
+  for (const { e, d } of shown) out.push(`${d || '????-??-??'} | ${e.layer} | ${e.name} | ${e.path}`);
+  if (dated.length > shown.length) out.push(`… ${dated.length - shown.length} more`);
+  const body = out.slice(1).join('\n');
+  return {
+    text: out.join('\n'), hit: null,
+    candidates: shown.map(({ e }) => ({ name: e.name, layer: e.layer, path: e.path, desc: e.desc, score: scoreEntry(e, toks) })),
+    answer: dated.length ? { path: '(list)', head: toks.join(' '), body, pointer: null } : null,
+  };
+}
+
 // ---------- retrieve ----------
 function scoreEntry(e, toks) {
   let s = 0;
@@ -202,6 +226,7 @@ function bestSection(file, toks) {
 }
 
 function retrieve(question, opts = {}) {
+  if (!opts.pick && /^\s*list\b/i.test(question)) return enumerate(question); // a pick means "open this file", never a list
   const toks = tokens(question);
   const entries = loadIndex();
   const ranked = entries.map(e => ({ e, s: scoreEntry(e, toks) })).sort((a, b) => b.s - a.s);
@@ -585,6 +610,11 @@ function test() {
   assert(t4.answer && t4.answer.path === t1.hit.path, 'pick failed, got: ' + (t4.answer && t4.answer.path));
   const t5 = retrieve('qqqqzzzzgibberish');
   assert(t5.answer === null && t5.candidates.length === 0, 'no-match shape failed: ' + JSON.stringify(t5.candidates));
+  // enumeration: leading "list" returns ALL matching entries, not one section
+  const t6 = retrieve('list brain-selftest');
+  assert(t6.candidates.length === 2 && t6.text.includes('brain-selftest-alpha') && t6.text.includes('brain-selftest-beta'), 'enumerate failed: ' + JSON.stringify(t6.candidates.map(c => c.name)));
+  const t7 = retrieve('list qqqqzzzzgibberish');
+  assert(t7.answer === null && t7.candidates.length === 0, 'enumerate no-match failed');
   // cost proof: evidence handed to the model vs reading whole files the default way
   const full = read(t1.hit.path).length + read(t2.hit.path).length;
   const evid = t1.text.length + t2.text.length;

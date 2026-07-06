@@ -5,6 +5,7 @@ Deterministic memory engine. Check the index first, open files second, invoke th
 ## Retrieval routing (every session)
 
 - Any "what did we decide / which X do we use / where is Y" question about the workspace: run `node brain.js "the question"` BEFORE any Grep/Glob/Read over memory or skills. It scores `INDEX.md` without opening files, opens ONE file, returns ONE section.
+- Enumeration ("list recent plans in X"): lead the query with `list` — returns ALL matching index entries newest-first instead of one section.
 - Store a new durable fact: `node brain.js remember "the fact" --name slug` (writes `memory/<slug>.md` + index line, no model needed).
 - After adding/removing skills, MCP servers, or memory files: `node brain.js index` to rescan, `node brain.js map` to refresh the visual.
 - Connectors/daemons not on disk live in `extras.md` — edit it, then reindex.
