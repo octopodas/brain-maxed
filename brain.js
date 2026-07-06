@@ -438,7 +438,8 @@ function mapHtml(data) {
       else if(n.layer==='skill'){diamond(n.x,n.y,n.r+1);cx.fill()}
       else{cx.beginPath();cx.arc(n.x,n.y,n.r,0,7);cx.fill()}
       cx.shadowBlur=0;
-      if(n===sel){cx.strokeStyle='#fff';cx.lineWidth=2;cx.beginPath();cx.arc(n.x,n.y,n.r+6,0,7);cx.stroke()}
+      if(n===sel){const pu=Math.sin(performance.now()/300);cx.strokeStyle='#fff';cx.lineWidth=2;cx.globalAlpha=.55+.45*pu;
+        cx.beginPath();cx.arc(n.x,n.y,n.r+7+2.5*pu,0,7);cx.stroke();cx.globalAlpha=dim?.1:1}
       if(!dim&&(showNames||cam.z>.9||n.layer==='app'||n.layer==='routine'||n===sel||filter)){
         const prio=n===sel?1e4:filter?9e3:n.layer==='app'?800:n.layer==='routine'?700:100+Math.min(80,Math.log2((n.size||1)/512+1)*12);
         labelCands.push({n,prio})}
