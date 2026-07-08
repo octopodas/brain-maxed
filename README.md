@@ -29,13 +29,15 @@ candidates: tts-voices(9)  audio-pipeline(4)  ...
 
 If the best section is just a pointer (`[[slug]]` or a `.md` link), it follows it once automatically.
 
+Lead the question with `list` (e.g. `node brain.js "list recent plans"`) to get every matching index entry, newest-first, instead of one section.
+
 ### Store a memory
 
 ```bash
 node brain.js remember "we deploy on Tuesdays after standup" --name deploy-cadence
 ```
 
-Writes `memory/report-cadence.md` and its index line in one step. `--name` is optional — without it the slug is built from the first keywords. Re-using a name overwrites (that's how you update a fact).
+Writes `memory/deploy-cadence.md` and its index line in one step. `--name` is optional — without it the slug is built from the first keywords. Re-using a name overwrites (that's how you update a fact).
 
 ### Rebuild the index
 
@@ -51,15 +53,17 @@ Rescans everything on disk. Run after adding/removing skills, MCP servers, or me
 node brain.js map && xdg-open brain-map.html
 ```
 
-Draws your whole agentic OS as concentric rings, like the source video: **CLAUDE.MD** core → orange **skills** rings → purple **memory** disc with department hubs (with file counts) → gold **routines** ring → outer blue **applications** ring of hexagons. Routines link to the skills they invoke.
+Draws your whole agentic OS as concentric rings: **CLAUDE.MD** core → orange **skills** rings → purple **memory** disc with department hubs (with file counts) → gold **routines** ring → outer blue **applications** ring of hexagons. Routines link to the skills they invoke.
 
 In the map:
 
 - drag the canvas to pan, scroll to zoom, drag a node to move it
-- click a node → sidebar with description, path, **open file** link (opens the file in a new tab — served through the app in serve mode, direct `file://` otherwise), and the file's content preview (read a skill without leaving the view)
+- click a node → sidebar with description, path, **open file** link (opens the file in a new tab — served through the app in serve mode, direct `file://` otherwise), and the file's content preview (read a skill without leaving the view); the selected node gets a pulsing ring
 - labels auto-declutter: they never overlap each other and stay a fixed readable size — zoom in and more of them appear as nodes spread apart (works in both Rings and Force)
 - `/` focuses search, typing filters, **Enter** opens and centers the best match
+- **ask the brain** (serve mode) runs a full question through `brain.js`, right in the panel: scored candidate chips plus the answer body, click a chip to re-pick that file and zoom to it
 - **Layout** toggle: Rings / Force · **View** toggle: Departments / Folders (semantic grouping vs disk location)
+- drag the panel's left edge to resize it; **+ / −** scale panel and side-pane text
 
 ### Attach an external project
 
